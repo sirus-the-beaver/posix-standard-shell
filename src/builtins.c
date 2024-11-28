@@ -132,6 +132,15 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
     exit_status = atoi(arg);
   }
 
+  char *status = vars_get("$?");
+  if (status) {
+    vars_set("$?", status);
+    exit_status = atoi(status);
+  } else {
+    vars_set("$?", "0");
+    exit_status = 0;
+  }
+
   params.status = exit_status;
   bigshell_exit();
   return -1;
