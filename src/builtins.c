@@ -125,21 +125,24 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
       }
     }
 
-    printf("exit: %s\n", arg);
+    if (atoi(arg) < 0 || atoi(arg) > 255) {
+      fprintf(stderr, "exit: exit status undefined\n");
+      return -1;
+    }
 
     params.status = atoi(arg);
     bigshell_exit();
   } else {
       char *status = vars_get("$?");
-    if (status) {
-      vars_set("$?", status);
-      params.status = atoi(status);
-      bigshell_exit();
-    } else {
-      vars_set("$?", "0");
-      params.status = 0;
-      bigshell_exit();
-    }
+      if (status) {
+        vars_set("$?", status);
+        params.status = atoi(status);
+        bigshell_exit();
+      } else {
+        vars_set("$?", "0");
+        params.status = 0;
+        bigshell_exit();
+      }
   }
   return -1;
 }
