@@ -110,6 +110,29 @@ static int
 builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
 {
   /* TODO: Set params.status to the appropriate value before exiting */
+  int exit_status = params.status;
+
+  if (cmd->argc > 2) {
+    fprint(stderr, "exit: too many arguments\n");
+    return -1;
+  }
+
+  if (cmd->argc == 2) {
+    char *arg = cmd->argv[1];
+
+    for (int i = 0; arg[i] != '\0'; i++) {
+      if (!isdigit(arg[i])) {
+        fprintf(stderr, "exit: numeric argument required\n");
+        params.status = 1;
+        bigshell_exit();
+        return -1;
+      }
+    }
+
+    exit_status = atoi(arg);
+  }
+
+  params.status = exit_status;
   bigshell_exit();
   return -1;
 }
