@@ -112,13 +112,13 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
   /* TODO: Set params.status to the appropriate value before exiting */
   int exit_status = params.status;
 
-  if (cmd->argc > 2) {
-    fprint(stderr, "exit: too many arguments\n");
+  if (cmd->word_count > 2) {
+    fprintf(stderr, "exit: too many arguments\n");
     return -1;
   }
 
-  if (cmd->argc == 2) {
-    char *arg = cmd->argv[1];
+  if (cmd->word_count == 2) {
+    char *arg = cmd->word_count[1];
 
     for (int i = 0; arg[i] != '\0'; i++) {
       if (!isdigit(arg[i])) {
