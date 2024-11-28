@@ -91,6 +91,22 @@ builtin_cd(struct command *cmd, struct builtin_redir const *redir_list)
   }
   /*TODO: Implement cd with arguments 
    */
+
+  if (cmd->word_count > 2) {
+    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "cd: too many arguments\n");
+    return -1;
+  }
+
+  if (cmd->word_count == 2) {
+    target_dir = cmd->words[1];
+  }
+
+  if (chdir(target_dir) < 0) {
+    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "cd: %s: %s\n", target_dir, strerror(errno));
+    return -1;
+  }
+
+  vars_set("PWD", target_dir);
   chdir(target_dir);
   return 0;
 }
@@ -133,13 +149,13 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
     params.status = atoi(arg);
     bigshell_exit();
   } else {
-      char *status = vars_get("$?");
+      char *status = vars_get("?");
       if (status) {
-        vars_set("$?", status);
+        vars_set("?", status);
         params.status = atoi(status);
         bigshell_exit();
       } else {
-        vars_set("$?", "0");
+        vars_set("?", "0");
         params.status = 0;
         bigshell_exit();
       }
