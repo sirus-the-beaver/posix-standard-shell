@@ -39,8 +39,8 @@ signal_init(void)
    * e.g. sigaction(SIGNUM, &new_handler, &saved_old_handler);
    *
    * */
-  errno = ENOSYS; /* not implemented */
-  return -1;
+  // errno = ENOSYS; /* not implemented */
+  // return -1;
 }
 
 /** enable signal to interrupt blocking syscalls (read/getline, etc) 
@@ -53,8 +53,8 @@ int
 signal_enable_interrupt(int sig)
 {
   /* TODO set the signal disposition for signal to interrupt  */
-  errno = ENOSYS; /* not implemented */
-  return -1;
+  // errno = ENOSYS; /* not implemented */
+  // return -1;
 }
 
 /** ignore a signal
@@ -67,8 +67,8 @@ int
 signal_ignore(int sig)
 {
   /* TODO set the signal disposition for signal back to its old state */
-  errno = ENOSYS; /* not implemented */
-  return -1;
+  // errno = ENOSYS; /* not implemented */
+  // return -1;
 }
 
 /** Restores signal dispositions to what they were when bigshell was invoked
@@ -84,6 +84,6 @@ signal_restore(void)
    * e.g. sigaction(SIGNUM, &saved_old_handler, NULL);
    *
    * */
-  errno = ENOSYS; /* not implemented */
-  return -1;
+  // errno = ENOSYS; /* not implemented */
+  // return -1;
 }
