@@ -89,8 +89,6 @@ builtin_cd(struct command *cmd, struct builtin_redir const *redir_list)
       return -1;
     }
   }
-  /*TODO: Implement cd with arguments 
-   */
 
   if (cmd->word_count > 2) {
     dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "cd: too many arguments\n");
@@ -127,7 +125,7 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
 {
   /* TODO: Set params.status to the appropriate value before exiting */
   if (cmd->word_count > 2) {
-    fprintf(stderr, "exit: too many arguments\n");
+    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "exit: too many arguments\n");
     return -1;
   }
 
@@ -136,13 +134,13 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
 
     for (int i = 0; arg[i] != '\0'; i++) {
       if (arg[i] < '0' || arg[i] > '9') {
-        fprintf(stderr, "exit: numeric argument required\n");
+        dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "exit: %s: numeric argument required\n", arg);
         return -1;
       }
     }
 
     if (atoi(arg) < 0 || atoi(arg) > 255) {
-      fprintf(stderr, "exit: exit status undefined\n");
+      dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "exit: %s: exit status undefined\n", arg);
       return -1;
     }
 
@@ -199,7 +197,7 @@ static int
 builtin_unset(struct command *cmd, struct builtin_redir const *redir_list)
 {
   for (size_t i = 1; i < cmd->word_count; ++i) {
-    /* TODO: Unset variables */
+    vars_unset(cmd->words[i]);
   }
   return 0;
 }
