@@ -118,10 +118,10 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
   }
 
   if (cmd->word_count == 2) {
-    char *arg = cmd->word_count[1];
+    char *arg = cmd->argv[1];
 
     for (int i = 0; arg[i] != '\0'; i++) {
-      if (!isdigit(arg[i])) {
+      if (arg[i] < '0' || arg[i] > '9') {
         fprintf(stderr, "exit: numeric argument required\n");
         params.status = 1;
         bigshell_exit();
