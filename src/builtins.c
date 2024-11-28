@@ -118,7 +118,7 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
   }
 
   if (cmd->word_count == 2) {
-    char *arg = cmd->argv[1];
+    char *arg = cmd->words[1];
 
     for (int i = 0; arg[i] != '\0'; i++) {
       if (arg[i] < '0' || arg[i] > '9') {
