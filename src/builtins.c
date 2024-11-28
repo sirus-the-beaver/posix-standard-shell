@@ -129,7 +129,9 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
       }
     }
 
-    exit_status = atoi(arg);
+    params.status = atoi(arg);
+    bigshell_exit();
+    return -1;
   } else {
       char *status = vars_get("$?");
     if (status) {
