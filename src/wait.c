@@ -22,10 +22,18 @@ wait_on_fg_pgid(pid_t const pgid)
   /* TODO send the "continue" signal to the process group 'pgid'
    * XXX review kill(2)
    */
+  if (kill(-pgid, SIGCONT) < 0) {
+    perror("kill");
+    goto err;
+  }
 
   if (is_interactive) {
     /* TODO make 'pgid' the foreground process group
      * XXX review tcsetpgrp(3) */
+    if (tcsetpgrp(STDIN_FILENO, pgid) < 0) {
+      perror("tcsetpgrp");
+      goto err;
+    }
   }
 
   /* XXX From this point on, all exit paths must account for setting bigshell
@@ -55,13 +63,16 @@ wait_on_fg_pgid(pid_t const pgid)
         if (jobs_get_status(jid, &status) < 0) goto err;
         if (WIFEXITED(status)) {
           /* TODO set params.status to the correct value */
+          params.status = WEXITSTATUS(status);
         } else if (WIFSIGNALED(status)) {
           /* TODO set params.status to the correct value */
+          params.status = 128 + WTERMSIG(status);
         }
 
         /* TODO remove the job for this group from the job list
          *  see jobs.h
          */
+        if (jobs_remove_pgid(pgid) < 0) goto err;
         goto out;
       }
       goto err; /* An actual error occurred */
@@ -75,7 +86,7 @@ wait_on_fg_pgid(pid_t const pgid)
     /* TODO handle case where a child process is stopped
      *  The entire process group is placed in the background
      */
-    if (/* TODO */ 0) {
+    if (WIFSTOPPED(status)) {
       fprintf(stderr, "[%jd] Stopped\n", (intmax_t)jid);
       goto out;
     }
@@ -97,6 +108,10 @@ out:
      *       You need to also finish signal.c to have full functionality here.
      *       Otherwise you bigshell will get stopped.
      */
+    if (tcsetpgrp(STDIN_FILENO, getpgrp()) < 0) {
+      perror("tcsetpgrp");
+      retval = -1;
+    }
   }
   return retval;
 }
@@ -123,7 +138,7 @@ wait_on_bg_jobs()
        * XXX make sure to do a nonblocking wait!
        */
       int status;
-      pid_t pid = waitpid(0, &status, 0);
+      pid_t pid = waitpid(-pgid, &status, WNOHANG);
       if (pid == 0) {
         /* Unwaited children that haven't exited */
         break;
