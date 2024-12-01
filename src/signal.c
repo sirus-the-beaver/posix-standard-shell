@@ -103,6 +103,16 @@ signal_restore(void)
    * e.g. sigaction(SIGNUM, &saved_old_handler, NULL);
    *
    * */
-  errno = ENOSYS; /* not implemented */
-  return -1;
+  if (sigaction(SIGTSTP, &old_sigtstp, NULL) == -1) {
+    return -1;
+  }
+
+  if (sigaction(SIGINT, &old_sigint, NULL) == -1) {
+    return -1;
+  }
+
+  if (sigaction(SIGTTOU, &old_sigttou, NULL) == -1) {
+    return -1;
+  }
+  return 0;
 }
