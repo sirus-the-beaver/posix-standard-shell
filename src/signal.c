@@ -64,8 +64,14 @@ int
 signal_enable_interrupt(int sig)
 {
   /* TODO set the signal disposition for signal to interrupt  */
-  errno = ENOSYS; /* not implemented */
-  return -1;
+  struct sigaction new_action = {.sa_handler = interrupting_signal_handler};
+  sigemptyset(&new_action.sa_mask);
+  new_action.sa_flags = 0;
+
+  if (sigaction(sig, &new_action, NULL) == -1) {
+    return -1;
+  }
+  return 0;
 }
 
 /** ignore a signal
