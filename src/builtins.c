@@ -123,7 +123,6 @@ builtin_cd(struct command *cmd, struct builtin_redir const *redir_list)
 static int
 builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
 {
-  /* TODO: Set params.status to the appropriate value before exiting */
   if (cmd->word_count > 2) {
     dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "exit: too many arguments\n");
     return -1;

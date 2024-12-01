@@ -39,8 +39,19 @@ signal_init(void)
    * e.g. sigaction(SIGNUM, &new_handler, &saved_old_handler);
    *
    * */
-  errno = ENOSYS; /* not implemented */
-  return -1;
+  if (sigaction(SIGTSTP, &ignore_action, &old_sigtstp) == -1) {
+    return -1;
+  }
+
+  if (sigaction(SIGINT, &ignore_action, &old_sigint) == -1) {
+    return -1;
+  }
+
+  if (sigaction(SIGTTOU, &ignore_action, &old_sigttou) == -1) {
+    return -1;
+  }
+
+  return 0;
 }
 
 /** enable signal to interrupt blocking syscalls (read/getline, etc) 
