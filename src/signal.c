@@ -84,8 +84,10 @@ int
 signal_ignore(int sig)
 {
   /* TODO set the signal disposition for signal back to its old state */
-  errno = ENOSYS; /* not implemented */
-  return -1;
+  if (sigaction(sig, &ignore_action, NULL) == -1) {
+    return -1;
+  }
+  return 0;
 }
 
 /** Restores signal dispositions to what they were when bigshell was invoked
