@@ -43,7 +43,13 @@ expand_command_words(struct command *cmd)
     expand(&cmd->words[i]);
   }
   /* TODO Assignment values */
+  for (size_t i = 0; i < cmd->assignment_count; ++i) {
+    expand(&cmd->assignments[i]->value);
+  }
   /* TODO I/O Filenames */
+  for (size_t i = 0; i < cmd->io_redir_count; ++i) {
+    expand(&cmd->io_redirs[i]->filename);
+  }
   return 0;
 }
 
