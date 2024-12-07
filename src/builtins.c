@@ -147,9 +147,8 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
     vars_set("?", arg);
     bigshell_exit();
   } else {
-
       int status = vars_get("?");
-      fprintf(stderr, "status: %d\n", status);
+      dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "exit: %s\n", status);
       params.status = (status) ? atoi(status) : 0;
       bigshell_exit();
   }
