@@ -145,7 +145,9 @@ move_fd(int src, int dst)
 {
   if (src == dst) return dst;
   /* TODO move src to dst */
+  if (dup2(src, dst) < 0) return -1;
   /* TODO close src */
+  close(src);
   return dst;
 }
 
