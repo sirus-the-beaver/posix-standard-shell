@@ -424,7 +424,7 @@ run_command_list(struct command_list *cl)
      * [TODO] Update upstream_pipefd initializer to get the (READ) side of the
      *        pipeline saved from the previous command
      */
-    int const upstream_pipefd = -1;
+    int const upstream_pipefd = pipeline_data.pipe_fd;
     int const has_upstream_pipe = (upstream_pipefd >= 0);
 
     /* If the current command is a pipeline command, create a new pipe on
@@ -445,6 +445,10 @@ run_command_list(struct command_list *cl)
      * [TODO] Handle errors that occur
      */
     int pipe_fds[2] = {-1, -1};
+    if (is_pl && pipe(pipe_fds) < 0) {
+      perror("pipe");
+      goto err;
+    }
 
     /* Grab the WRITE side of the pipeline we just created */
     int const downstream_pipefd = pipe_fds[STDOUT_FILENO];
@@ -467,9 +471,17 @@ run_command_list(struct command_list *cl)
      * [TODO] Re-assign child_pid to the new process id
      * [TODO] Handle errors if they occur
      */
-    int const did_fork = 0; /* TODO */
+    if (!is_builtin || !is_fg) {
+      child_pid = fork();
+      if (child_pid < 0) {
+        perror("fork");
+        goto err;
+      }
+    }
+    int const did_fork = child_pid; /* TODO */
     if (did_fork) {
       /* [TODO] fork */
+      fork();
 
       /* All of the processes in a pipeline (or single command) belong to the
        * same process group. This is how the shell manages job control. We will
@@ -557,6 +569,20 @@ run_command_list(struct command_list *cl)
          * [TODO] move downstream_pipefd to STDOUT_FILENO if it's valid
          */
 
+        if (upstream_pipefd >= 0) {
+          if (move_fd(upstream_pipefd, STDIN_FILENO) < 0) {
+            perror("move_fd");
+            goto err;
+          }
+        }
+
+        if (downstream_pipefd >= 0) {
+          if (move_fd(downstream_pipefd, STDOUT_FILENO) < 0) {
+            perror("move_fd");
+            goto err;
+          }
+        }
+
         /* Now handle the remaining redirect operators from the command. */
         if (do_io_redirects(cmd) < 0) err(1, 0);
 
@@ -579,6 +605,8 @@ run_command_list(struct command_list *cl)
          *
          *  XXX Note: cmd->words is a null-terminated array of strings. Nice!
          */
+
+        execvp(cmd->words[0], cmd->words);
 
         err(127, 0); /* Exec failure -- why might this happen? */
         assert(0);   /* UNREACHABLE -- This should never be reached ABORT! */
