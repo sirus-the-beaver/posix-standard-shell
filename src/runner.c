@@ -285,18 +285,25 @@ do_io_redirects(struct command *cmd)
   int status = 0;
   for (size_t i = 0; i < cmd->io_redir_count; ++i) {
     struct io_redir *r = cmd->io_redirs[i];
+
     if (r->io_op == OP_GREATAND || r->io_op == OP_LESSAND) {
       /* These are the operators [n]>& and [n]<&
        *
        * They are identical except that they have different default
        * values for n when omitted: 0 for <& and 1 for >&. */
 
+      int target_fd = r->fd;
       if (strcmp(r->filename, "-") == 0) {
         /* [n]>&- and [n]<&- close file descriptor [n] */
         /* TODO close file descriptor n.
          *
          * XXX What is n? Look for it in `struct io_redir->???` (parser.h)
          */
+        if (close(target_fd) < 0) {
+          perror("close");
+          status = -1;
+          goto err;
+        }
       } else {
         /* The filename is interpreted as a file descriptor number to
          * redirect to. For example, 2>&1 duplicates file descriptor 1
@@ -318,6 +325,11 @@ do_io_redirects(struct command *cmd)
                                  downcasting */
         ) {
           /* TODO duplicate src to dst. */
+          if (dup2((int)src_fd, target_fd) < 0) {
+            perror("dup2");
+            status = -1;
+            goto err;
+          }
         } else {
           /* XXX Syntax error--(not a valid number)--we can "recover" by
            * attempting to open a file instead. That's what bash does.
@@ -336,13 +348,23 @@ do_io_redirects(struct command *cmd)
        * XXX Note: you can supply a mode to open() even if you're not creating a
        * file. it will just ignore that argument.
        */
+      int mode = 0666;
+      int fd = open(r->filename, flags, mode);
+
+      if (fd < 0) {
+        perror("open");
+        status = -1;
+        goto err;
+      }
 
       /* TODO Move the opened file descriptor to the redirection target */
       /* XXX use move_fd() */
     }
-    if (0) {
-    err: /* TODO Anything that can fail should jump here. No silent errors!!! */
+    if (move_fd(fd, r->fd) < 0) {
+      perror("move_fd");
       status = -1;
+      goto err;
+     /* TODO Anything that can fail should jump here. No silent errors!!! */
     }
   }
   return status;
