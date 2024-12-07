@@ -130,32 +130,25 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
 
   if (cmd->word_count == 2) {
     char *arg = cmd->words[1];
+    char *end;
+    long exit_code = strtol(arg, &end, 10);
 
-    for (int i = 0; arg[i] != '\0'; i++) {
-      if (arg[i] < '0' || arg[i] > '9') {
-        dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "exit: %s: numeric argument required\n", arg);
-        return -1;
-      }
-    }
-
-    if (atoi(arg) < 0 || atoi(arg) > 255) {
-      dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "exit: %s: exit status undefined\n", arg);
+    if (*end != '\0') {
+      dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "exit: %s: numeric argument required\n", arg);
       return -1;
     }
 
-    params.status = atoi(arg);
+    if (exit_code < 0 || exit_code > 255) {
+      dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "exit: %s: exit status out of range\n", arg);
+      return -1;
+    }
+
+    params.status = (int)exit_code;
     bigshell_exit();
   } else {
       char *status = vars_get("?");
-      if (status) {
-        vars_set("?", status);
-        params.status = atoi(status);
-        bigshell_exit();
-      } else {
-        vars_set("?", "0");
-        params.status = 0;
-        bigshell_exit();
-      }
+      params.status = (status) ? atoi(status) : 0;
+      bigshell_exit();
   }
   return -1;
 }
