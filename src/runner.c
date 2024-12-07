@@ -359,12 +359,16 @@ do_io_redirects(struct command *cmd)
 
       /* TODO Move the opened file descriptor to the redirection target */
       /* XXX use move_fd() */
+      if (move_fd(fd, r->fd) < 0) {
+        perror("move_fd");
+        status = -1;
+        goto err;
+      }
     }
-    if (move_fd(fd, r->fd) < 0) {
-      perror("move_fd");
+    if (0) {
+    err: /* TODO Anything that can fail should jump here. No silent errors!!! */
       status = -1;
-      goto err;
-     /* TODO Anything that can fail should jump here. No silent errors!!! */
+      
     }
   }
   return status;
