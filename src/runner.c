@@ -292,7 +292,7 @@ do_io_redirects(struct command *cmd)
        * They are identical except that they have different default
        * values for n when omitted: 0 for <& and 1 for >&. */
 
-      int target_fd = r->fd;
+      int target_fd = r->io_number;
       if (strcmp(r->filename, "-") == 0) {
         /* [n]>&- and [n]<&- close file descriptor [n] */
         /* TODO close file descriptor n.
@@ -325,7 +325,7 @@ do_io_redirects(struct command *cmd)
                                  downcasting */
         ) {
           /* TODO duplicate src to dst. */
-          if (dup2((int)src_fd, target_fd) < 0) {
+          if (dup2(src, target_fd) < 0) {
             perror("dup2");
             status = -1;
             goto err;
@@ -359,7 +359,7 @@ do_io_redirects(struct command *cmd)
 
       /* TODO Move the opened file descriptor to the redirection target */
       /* XXX use move_fd() */
-      if (move_fd(fd, r->fd) < 0) {
+      if (move_fd(fd, r->io_number) < 0) {
         perror("move_fd");
         status = -1;
         goto err;
