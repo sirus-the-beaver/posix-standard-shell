@@ -145,7 +145,9 @@ move_fd(int src, int dst)
 {
   if (src == dst) return dst;
   /* TODO move src to dst */
-  if (dup2(src, dst) < 0) return -1;
+  if (dup2(src, dst) < 0) {
+    return -1;
+  }
   /* TODO close src */
   close(src);
   return dst;
@@ -634,6 +636,10 @@ run_command_list(struct command_list *cl)
       /* Background or Pipeline */
       assert(is_bg || is_pl);
       params.bg_pid = child_pid;
+
+      char bg_pid_str[32];
+      snprintf(bg_pid_str, sizeof(bg_pid_str), "%jd", (intmax_t)child_pid);
+      vars_set("!", bg_pid_str);
 
       if (is_bg) {
         /* Pipelines that end with a background (&) command print a little
