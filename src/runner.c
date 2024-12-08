@@ -501,6 +501,7 @@ run_command_list(struct command_list *cl)
        */
 
       if (setpgid(child_pid, pipeline_data.pgid) < 0) {
+        fprintf(stderr, "PGID of child process %d is %d\n", child_pid, pipeline_data.pgid);
         if (errno == EACCES) errno = 0;
         else goto err;
       }
