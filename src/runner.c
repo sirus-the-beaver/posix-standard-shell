@@ -539,7 +539,7 @@ run_command_list(struct command_list *cl)
 
         do_builtin_io_redirects(cmd, &redir_list);
 
-        do_variable_assignment(cmd, 0);
+        do_variable_assignment(cmd, 1);
 
         /* XXX Here's where we call the builtin function */
         int result = builtin(cmd, redir_list);
