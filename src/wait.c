@@ -166,6 +166,7 @@ wait_on_bg_jobs()
 
       /* Handle case where a process in the group is stopped */
       if (WIFSTOPPED(status)) {
+        if (jobs_set_status(jid, status) < 0) return -1;
         fprintf(stderr, "[%jd] Stopped\n", (intmax_t)jid);
         break;
       }
