@@ -51,7 +51,7 @@ wait_on_fg_pgid(pid_t const pgid)
   for (;;) {
     /* Wait on ALL processes in the process group 'pgid' */
     int status;
-    pid_t res = waitpid(-pgid, &status, WNOHANG);
+    pid_t res = waitpid(-pgid, &status, 0);
     if (res < 0) {
       /* Error occurred (some errors are ok, see below)
        *
@@ -61,6 +61,7 @@ wait_on_fg_pgid(pid_t const pgid)
         /* No unwaited-for children. The job is done! */
         errno = 0;
         if (jobs_get_status(jid, &status) < 0) goto err;
+        
         if (WIFEXITED(status)) {
           /* TODO set params.status to the correct value */
           params.status = WEXITSTATUS(status);
