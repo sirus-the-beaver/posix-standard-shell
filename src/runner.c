@@ -627,10 +627,24 @@ run_command_list(struct command_list *cl)
     /* Whether the parent waits on the child is dependent on the control
      * operator */
     if (is_fg) {
+      if (setpgid(pipeline_data.pgid, pipeline_data.pgid) < 0) {
+        perror("setpgid");
+        return -1;
+      }
       if (wait_on_fg_pgid(pipeline_data.pgid) < 0) {
         warn(0);
         params.status = 127;
         return -1;
+
+      }
+
+      if (WIFSTOPPED(params.status)) {
+        fprintf(stderr, "[%jd] Stopped\n", pipeline_data.jid);
+
+        if (setpgid(pipeline_data.pgid, 0) < 0) {
+          perror("setpgid to background");
+          return -1;
+        }
       }
     } else {
       /* Background or Pipeline */
