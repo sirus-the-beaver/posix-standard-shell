@@ -150,7 +150,7 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
     if (status) {
       params.status = atoi(status);
     } else {
-      params.status = 127;
+      params.status = 0;
     }
     bigshell_exit();
   }
