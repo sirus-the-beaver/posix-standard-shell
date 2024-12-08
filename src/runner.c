@@ -69,7 +69,7 @@ do_variable_assignment(struct command const *cmd, int export_all)
     /* TODO Assign */
     vars_set(a->name, a->value);
     /* TODO Export (if export_all != 0) */
-    if (export_all) {
+    if (export_all != 0) {
       vars_export(a->name);
     }
   }
