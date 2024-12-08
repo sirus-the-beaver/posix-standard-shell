@@ -553,7 +553,7 @@ run_command_list(struct command_list *cl)
           free(tmp);
         }
 
-        params.status = result;
+        params.status = result ? 127 : 0;
         /* If we forked, exit now */
         if (!is_fg) exit(params.status);
 
@@ -627,10 +627,19 @@ run_command_list(struct command_list *cl)
     /* Whether the parent waits on the child is dependent on the control
      * operator */
     if (is_fg) {
+      int status;
       if (wait_on_fg_pgid(pipeline_data.pgid) < 0) {
         warn(0);
         params.status = 127;
         return -1;
+      }
+
+      if (WIFEXITED(status)) {
+        params.status = WEXITSTATUS(status);
+      } else if (WIFSIGNALED(status)) {
+        params.status = 128 + WTERMSIG(status);
+      } else {
+        params.status = 127;
       }
     } else {
       /* Background or Pipeline */
