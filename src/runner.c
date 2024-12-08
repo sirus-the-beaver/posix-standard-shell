@@ -480,10 +480,10 @@ run_command_list(struct command_list *cl)
         goto err;
       }
     }
+
     int const did_fork = child_pid; /* TODO */
     if (did_fork) {
       /* [TODO] fork */
-      fork();
 
       /* All of the processes in a pipeline (or single command) belong to the
        * same process group. This is how the shell manages job control. We will
