@@ -637,10 +637,6 @@ run_command_list(struct command_list *cl)
       assert(is_bg || is_pl);
       params.bg_pid = child_pid;
 
-      char bg_pid_str[32];
-      snprintf(bg_pid_str, sizeof(bg_pid_str), "%jd", (intmax_t)child_pid);
-      vars_set("!", bg_pid_str);
-
       if (is_bg) {
         /* Pipelines that end with a background (&) command print a little
          * message when they spawn.
