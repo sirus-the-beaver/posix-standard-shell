@@ -77,7 +77,10 @@ wait_on_fg_pgid(pid_t const pgid)
         /* TODO remove the job for this group from the job list
          *  see jobs.h
          */
-        if (jobs_remove_pgid(pgid) < 0) goto err;
+        if (jobs_remove_pgid(pgid) < 0) {
+          perror("jobs_remove_pgid");
+          goto err;
+        }
         goto out;
       }
       goto err; /* An actual error occurred */
