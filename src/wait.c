@@ -64,9 +64,13 @@ wait_on_fg_pgid(pid_t const pgid)
         if (WIFEXITED(status)) {
           /* TODO set params.status to the correct value */
           params.status = WEXITSTATUS(status);
+          // debug if params.status is correct
+          fprintf(stderr, "params.status: %d\n", params.status);
         } else if (WIFSIGNALED(status)) {
           /* TODO set params.status to the correct value */
           params.status = 128 + WTERMSIG(status);
+          // debug if params.status is correct
+          fprintf(stderr, "params.status: %d\n", params.status);
         }
 
         /* TODO remove the job for this group from the job list
@@ -166,7 +170,6 @@ wait_on_bg_jobs()
 
       /* Handle case where a process in the group is stopped */
       if (WIFSTOPPED(status)) {
-        if (jobs_set_status(jid, status) < 0) return -1;
         fprintf(stderr, "[%jd] Stopped\n", (intmax_t)jid);
         break;
       }
