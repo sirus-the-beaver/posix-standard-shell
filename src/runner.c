@@ -244,7 +244,7 @@ do_builtin_io_redirects(struct command *cmd, struct builtin_redir **redir_list)
       int flags = get_io_flags(r->io_op);
       gprintf("attempting to open file %s with flags %d", r->filename, flags);
       /* TODO Open the specified file. */
-      int fd = open(r->filename, flags, 0777);
+      int fd = open(r->filename, flags, 0666);
       if (fd < 0) goto err;
       struct builtin_redir *rec = *redir_list;
       for (; rec; rec = rec->next) {
