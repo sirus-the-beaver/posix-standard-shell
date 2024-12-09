@@ -66,13 +66,15 @@ wait_on_fg_pgid(pid_t const pgid)
           /* TODO set params.status to the correct value */
           params.status = WEXITSTATUS(status);
           // debug if params.status is correct
-          fprintf(stderr, "params.status: %d\n", params.status);
+          // fprintf(stderr, "params.status: %d\n", params.status);
         } else if (WIFSIGNALED(status)) {
           /* TODO set params.status to the correct value */
           params.status = 128 + WTERMSIG(status);
           // debug if params.status is correct
-          fprintf(stderr, "params.status: %d\n", params.status);
+          // fprintf(stderr, "params.status: %d\n", params.status);
         }
+
+        fprintf(stderr, "Foreground process group %d finished with status %d\n", pgid, params.status);
 
         /* TODO remove the job for this group from the job list
          *  see jobs.h

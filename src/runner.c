@@ -608,8 +608,6 @@ run_command_list(struct command_list *cl)
          *  XXX Note: cmd->words is a null-terminated array of strings. Nice!
          */
 
-        fprintf(stderr, "PGID of child process %d is %d\n", child_pid, pipeline_data.pgid);
-
         execvp(cmd->words[0], cmd->words);
 
         err(127, 0); /* Exec failure -- why might this happen? */
