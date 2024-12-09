@@ -473,17 +473,22 @@ run_command_list(struct command_list *cl)
      * [TODO] Re-assign child_pid to the new process id
      * [TODO] Handle errors if they occur
      */
-    if (!is_builtin || !is_fg) {
+    // if (!is_builtin || !is_fg) {
+    //   child_pid = fork();
+    //   if (child_pid < 0) {
+    //     perror("fork");
+    //     goto err;
+    //   }
+    // }
+
+    int const did_fork = 1; /* TODO */
+    if (did_fork) {
+      /* [TODO] fork */
       child_pid = fork();
       if (child_pid < 0) {
         perror("fork");
         goto err;
       }
-    }
-
-    int const did_fork = child_pid; /* TODO */
-    if (did_fork) {
-      /* [TODO] fork */
 
       /* All of the processes in a pipeline (or single command) belong to the
        * same process group. This is how the shell manages job control. We will

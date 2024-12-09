@@ -146,7 +146,6 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
     params.status = (int)exit_code;
     bigshell_exit();
   } else {
-    fprintf(stderr, "Last exit status: %d\n", params.status);
     bigshell_exit();
   }
   return -1;
