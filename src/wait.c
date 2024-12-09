@@ -74,7 +74,7 @@ wait_on_fg_pgid(pid_t const pgid)
           // fprintf(stderr, "params.status: %d\n", params.status);
         }
 
-        fprintf(stderr, "Foreground process group %d finished with status %d\n", pgid, params.status);
+        // fprintf(stderr, "Foreground process group %d finished with status %d\n", pgid, params.status);
 
         /* TODO remove the job for this group from the job list
          *  see jobs.h
