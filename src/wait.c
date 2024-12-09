@@ -65,11 +65,13 @@ wait_on_fg_pgid(pid_t const pgid)
         if (WIFEXITED(status)) {
           /* TODO set params.status to the correct value */
           params.status = WEXITSTATUS(status);
+          fflush(stdout);
           // debug if params.status is correct
           // fprintf(stderr, "params.status: %d\n", params.status);
         } else if (WIFSIGNALED(status)) {
           /* TODO set params.status to the correct value */
           params.status = 128 + WTERMSIG(status);
+          fflush(stdout);
           // debug if params.status is correct
           // fprintf(stderr, "params.status: %d\n", params.status);
         }
