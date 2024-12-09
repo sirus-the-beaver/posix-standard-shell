@@ -553,7 +553,7 @@ run_command_list(struct command_list *cl)
           free(tmp);
         }
 
-        params.status = result;
+        params.status = result ? 127 : 0;
         /* If we forked, exit now */
         if (!is_fg) exit(params.status);
 

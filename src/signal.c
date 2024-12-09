@@ -85,8 +85,18 @@ int
 signal_ignore(int sig)
 {
   /* TODO set the signal disposition for signal back to its old state */
-  if (sigaction(sig, &ignore_action, NULL) == -1) {
-    return -1;
+  if (sig == SIGTSTP) {
+    if (sigaction(SIGTSTP, &ignore_action, &old_sigtstp) == -1) {
+      return -1;
+    }
+  } else if (sig == SIGINT) {
+    if (sigaction(SIGINT, &ignore_action, &old_sigint) == -1) {
+      return -1;
+    }
+  } else if (sig == SIGTTOU) {
+    if (sigaction(SIGTTOU, &ignore_action, &old_sigttou) == -1) {
+      return -1;
+    }
   }
   return 0;
 }
