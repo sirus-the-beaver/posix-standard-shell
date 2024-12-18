@@ -13,7 +13,13 @@ BigShell is a custom Unix-like shell implementation degigned to handle both sync
 
 ## Code Structure
 - ```bigshell.c```: Entry point for BigShell. Initializes signal handlers and starts the main event loop.
+- ```builtins.c```: Implements pseudo-redirection for built-in shell commands, allowing them to write to standard streams without altering the shell's actual open files by using a virtual layer on top of the existing file descriptor system.
+- ```exit.c```: Defines the bigshell_exit function, which cleans up and exits the shell by sending a SIGHUP signal to all running jobs to terminate them.
+- ```expand.c```: Handles variable and other expansions required by the shell, providing the necessary functionality as defined in the expand.h interface. It includes various standard and custom headers to support its operations.
+- ```params.c```: Defines and initializes a params struct that holds two special parameters for the shell: status (representing the last command's exit status) and bg_pid (representing the last background process ID).
 - ```runner.c```: Manages command execution, including pipelines and redirection.
 - ```signal.c```: Contains custom signal handlers and functions for signal management.
 - ```jobs.c```: Handles job control features, including foreground and background process management.
+- ```vars.c```: Manages shell variables, defining a linked list structure to store variables with their names, values, and export status, and includes functions to manipulate and validate these variables.
 - ```parser.c```: Parses user input into commands and arguments.
+- ```wait.c```: Provides functions to manage and wait for foreground process groups in a shell environment, including handling job control and signaling processes to continue execution.
